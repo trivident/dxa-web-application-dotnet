@@ -3,7 +3,7 @@
 
     <PropertyGroup>
         <!-- Input parameters -->
-        <Version Condition="'$(VERSION)' == ''">0.0.0.0</Version>
+        <Version Condition="'$(VERSION)' == ''">1.0.0.0</Version>
         <Version Condition="'$(VERSION)' != ''">$(VERSION)</Version>
         <IsPreRelease>true</IsPreRelease>
         <BuildConfiguration>Release</BuildConfiguration>
@@ -93,21 +93,14 @@
             Namespaces="&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="//msb:DxaFrameworkLibs/@Include"
             Value="..\packages\Sdl.Dxa.Framework.Web8.$(PackageVersion)\lib\net452\*.*" />
-        <XmlPoke
-            XmlInputPath="$(DxaFrameworkPackageDirectory)\Sdl.Dxa.Framework.2013SP1.targets"
-            Namespaces="&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//msb:DxaFrameworkLibs/@Include"
-            Value="..\packages\Sdl.Dxa.Framework.2013SP1.$(PackageVersion)\lib\net452\*.*" />
-
-        <Exec Command="$(NuGet) pack Sdl.Dxa.Framework.Web8.nuspec -Version $(PackageVersion)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
-        <Exec Command="$(NuGet) pack Sdl.Dxa.Framework.2013SP1.nuspec -Version $(PackageVersion)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
+        
+        <Exec Command="$(NuGet) pack SCA.Sdl.Dxa.Framework.Web8.nuspec -Version $(PackageVersion)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
     </Target>
 
     <!-- =============================================================================================================================================  -->
     <Target Name="PublishPackages">
         <Message Text="Publishing NuGet packages to '$(NuGetRepositoryUrl)' ..." Importance="high" />
 
-        <Exec Command="$(NuGet) push Sdl.Dxa.Framework.Web8.$(PackageVersion).nupkg $(NuGetAPIKey) -Source $(NuGetRepositoryUrl)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
-        <Exec Command="$(NuGet) push Sdl.Dxa.Framework.2013SP1.$(PackageVersion).nupkg $(NuGetAPIKey) -Source $(NuGetRepositoryUrl)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
+        <Exec Command="$(NuGet) push SCA.Sdl.Dxa.Framework.Web8.$(PackageVersion).nupkg $(NuGetAPIKey) -Source $(NuGetRepositoryUrl)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
     </Target>
 </Project>
