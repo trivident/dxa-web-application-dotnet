@@ -14,4 +14,4 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-// NOTE: Version Info and Copyright statement is automatically appended by the build process (ciBuild.proj)
+// NOTE: Version Info and Copyright statement is automatically appended by the build process (ciBuild.proj)[assembly: AssemblyVersion("1.0.0.0")]

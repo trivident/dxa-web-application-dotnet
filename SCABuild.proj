@@ -89,10 +89,10 @@
         
         <!--Versionize the path to DXA Framework libs in the {package_id}.targets files -->
         <XmlPoke 
-            XmlInputPath="$(DxaFrameworkPackageDirectory)\Sdl.Dxa.Framework.Web8.targets"
+            XmlInputPath="$(DxaFrameworkPackageDirectory)\SCA.Sdl.Dxa.Framework.Web8.targets"
             Namespaces="&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="//msb:DxaFrameworkLibs/@Include"
-            Value="..\packages\Sdl.Dxa.Framework.Web8.$(PackageVersion)\lib\net452\*.*" />
+            Value="..\packages\SCA.Sdl.Dxa.Framework.Web8.$(PackageVersion)\lib\net452\*.*" />
         
         <Exec Command="$(NuGet) pack SCA.Sdl.Dxa.Framework.Web8.nuspec -Version $(PackageVersion)" WorkingDirectory="$(DxaFrameworkPackageDirectory)" />
     </Target>
