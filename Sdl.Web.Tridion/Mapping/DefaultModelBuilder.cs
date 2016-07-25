@@ -366,7 +366,7 @@ namespace Sdl.Web.Tridion.Mapping
         }
 
 
-        protected virtual ViewModel CreateViewModel(MappingData mappingData)
+        protected virtual ViewModel CreateViewModel(MappingData mappingData, SemanticSchemaField contextSchemaField = null)
         {
             Type modelType = mappingData.TargetType; // TODO: why is this not a separate parameter?
 
@@ -394,10 +394,11 @@ namespace Sdl.Web.Tridion.Mapping
                 {
                     foreach (SemanticProperty info in propertySemantics[pi.Name])
                     {
-                        IField field = GetFieldFromSemantics(mappingData, info);
+                        SemanticSchemaField schemaField = null;
+                        IField field = GetFieldFromSemantics(mappingData, info, contextSchemaField, out schemaField);
                         if (field != null)
                         {
-                            pi.SetValue(model, MapFieldValues(field, propertyType, multival, mappingData));
+                            pi.SetValue(model, MapFieldValues(field, propertyType, multival, mappingData, schemaField));
                             xpmPropertyMetadata.Add(pi.Name, GetFieldXPath(field));
                             break;
                         }
@@ -484,8 +485,9 @@ namespace Sdl.Web.Tridion.Mapping
             return filtered;
         }
 
-        private static IField GetFieldFromSemantics(MappingData mapData, SemanticProperty info)
+        private static IField GetFieldFromSemantics(MappingData mapData, SemanticProperty info, SemanticSchemaField contextSchemaField, out SemanticSchemaField matchingField)
         {
+            matchingField = null;
             KeyValuePair<string, string>? entityData = GetEntityData(info.Prefix, mapData.TargetEntitiesByPrefix, mapData.ParentDefaultPrefix);
             if (entityData != null)
             {
@@ -499,8 +501,8 @@ namespace Sdl.Web.Tridion.Mapping
                     if (entity != null && mapData.SemanticSchema!=null)
                     {
                         FieldSemantics fieldSemantics = new FieldSemantics(prefix, entity, property);
-                        // locate semantic schema field
-                        SemanticSchemaField matchingField = mapData.SemanticSchema.FindFieldBySemantics(fieldSemantics);
+                        // locate semantic schema field (using current context embedded field if available)
+                        matchingField = contextSchemaField!=null ? contextSchemaField.FindFieldBySemantics(fieldSemantics) : mapData.SemanticSchema.FindFieldBySemantics(fieldSemantics);
                         if (matchingField != null)
                         {
                             return ExtractMatchedField(matchingField, (matchingField.IsMetadata && mapData.Meta!=null) ? mapData.Meta : mapData.Content, mapData.EmbedLevel);
@@ -565,7 +567,7 @@ namespace Sdl.Web.Tridion.Mapping
         }
 
 
-        private object MapFieldValues(IField field, Type modelType, bool multival, MappingData mapData)
+        private object MapFieldValues(IField field, Type modelType, bool multival, MappingData mapData, SemanticSchemaField contextSchemaField = null)
         {
             try
             {
@@ -604,7 +606,7 @@ namespace Sdl.Web.Tridion.Mapping
                     case FieldType.Embedded:
                         foreach (IFieldSet value in field.EmbeddedValues)
                         {
-                            mappedValues.Add(MapEmbeddedFields(value, modelType, mapData));
+                            mappedValues.Add(MapEmbeddedFields(value, modelType, mapData, contextSchemaField));
                         }
                         break;
 
@@ -726,22 +728,22 @@ namespace Sdl.Web.Tridion.Mapping
             return ModelBuilderPipeline.CreateEntityModel(component, modelType, localization);
         }
 
-        private ViewModel MapEmbeddedFields(IFieldSet embeddedFields, Type modelType, MappingData mapData)
+        private ViewModel MapEmbeddedFields(IFieldSet embeddedFields, Type modelType, MappingData mapData, SemanticSchemaField contextSchemaField)
         {
             MappingData embeddedMappingData = new MappingData
-                {
-                    TargetType = modelType,
-                    Content = embeddedFields,
-                    Meta = null,
-                    EntityNames = mapData.EntityNames, // TODO: should this not be re-determined for the embedded model type?
-                    ParentDefaultPrefix = mapData.ParentDefaultPrefix,
-                    TargetEntitiesByPrefix = mapData.TargetEntitiesByPrefix, // TODO: should this not be re-determined for the embedded model type?
-                    SemanticSchema = mapData.SemanticSchema, // TODO: should this not be re-determined for the embedded model type?
-                    EmbedLevel = mapData.EmbedLevel + 1,
-                    Localization = mapData.Localization
-                };
+            {
+                TargetType = modelType,
+                Content = embeddedFields,
+                Meta = null,
+                EntityNames = mapData.EntityNames, // TODO: should this not be re-determined for the embedded model type?
+                ParentDefaultPrefix = mapData.ParentDefaultPrefix,
+                TargetEntitiesByPrefix = mapData.TargetEntitiesByPrefix, // TODO: should this not be re-determined for the embedded model type?
+                SemanticSchema = mapData.SemanticSchema, // TODO: should this not be re-determined for the embedded model type?
+                EmbedLevel = mapData.EmbedLevel + 1,
+                Localization = mapData.Localization
+            };
 
-            return CreateViewModel(embeddedMappingData);
+            return CreateViewModel(embeddedMappingData, contextSchemaField);
         }
 
         protected Dictionary<string, string> GetAllFieldsAsDictionary(IComponent component)
