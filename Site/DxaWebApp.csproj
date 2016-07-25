@@ -97,9 +97,8 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sdl.Web.Common, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sdl.Dxa.Framework.Web8.1.5.0-alpha-201605161540\lib\net452\Sdl.Web.Common.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Sdl.Web.Common">
+      <HintPath>..\packages\Sdl.Dxa.Framework.Web8.1.5.0\lib\net452\Sdl.Web.Common.dll</HintPath>
     </Reference>
     <Reference Include="Sdl.Web.Context.Api, Version=8.1.0.1232, Culture=neutral, PublicKeyToken=ddfc895746e5ee6b, processorArchitecture=MSIL">
       <HintPath>..\packages\Sdl.Web.Context.Client.8.1.1\lib\net45\Sdl.Web.Context.Api.dll</HintPath>
@@ -113,9 +112,8 @@
       <HintPath>..\packages\Sdl.Web.Context.Client.8.1.1\lib\net45\Sdl.Web.Context.OData.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sdl.Web.Mvc, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sdl.Dxa.Framework.Web8.1.5.0-alpha-201605161540\lib\net452\Sdl.Web.Mvc.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Sdl.Web.Mvc">
+      <HintPath>..\packages\Sdl.Dxa.Framework.Web8.1.5.0\lib\net452\Sdl.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Spatial, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -162,6 +160,9 @@
     <Reference Include="Tridion.ContentDelivery.UGC, Version=8.1.0.1239, Culture=neutral, PublicKeyToken=ddfc895746e5ee6b, processorArchitecture=MSIL">
       <HintPath>..\packages\Sdl.Web.Delivery.8.1.1\lib\net45\Tridion.ContentDelivery.UGC.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Tridion.OutboundEmail.ContentDelivery">
+      <HintPath>..\packages\Sdl.AudienceManager.ContentDelivery.8.1.1\lib\net45\Tridion.OutboundEmail.ContentDelivery.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mvc5">
       <HintPath>..\packages\Unity.Mvc5.1.1\lib\net45\Unity.Mvc5.dll</HintPath>
@@ -308,5 +309,11 @@
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\Sdl.Dxa.Framework.Web8.1.5.0-alpha-201605161540\build\net452\Sdl.Dxa.Framework.Web8.targets" Condition="Exists('..\packages\Sdl.Dxa.Framework.Web8.1.5.0-alpha-201605161540\build\net452\Sdl.Dxa.Framework.Web8.targets')" />
+  <Import Project="..\packages\Sdl.Dxa.Framework.Web8.1.5.0\build\net452\Sdl.Dxa.Framework.Web8.targets" Condition="Exists('..\packages\Sdl.Dxa.Framework.Web8.1.5.0\build\net452\Sdl.Dxa.Framework.Web8.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Sdl.Dxa.Framework.Web8.1.5.0\build\net452\Sdl.Dxa.Framework.Web8.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Sdl.Dxa.Framework.Web8.1.5.0\build\net452\Sdl.Dxa.Framework.Web8.targets'))" />
+  </Target>
 </Project>

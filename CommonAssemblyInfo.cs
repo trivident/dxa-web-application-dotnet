@@ -15,3 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // NOTE: Version Info and Copyright statement is automatically appended by the build process (ciBuild.proj)[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0-alpha-201607251542")]
+[assembly: AssemblyCopyright("Copyright © 2014-2016 SDL Group")]
