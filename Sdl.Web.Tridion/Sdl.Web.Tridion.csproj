@@ -165,7 +165,6 @@
     <Compile Include="Context\ContextServiceClaimsProvider.cs" />
     <Compile Include="CdApiLocalizationResolver.cs" />
   </ItemGroup>
- 
   <ItemGroup>
     <Compile Include="CdConfigLocalizationResolver.cs" />
     <Compile Include="Configuration\ModelBuilderCollection.cs" />
@@ -203,7 +202,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
