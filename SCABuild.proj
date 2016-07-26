@@ -32,7 +32,7 @@
     <!-- =============================================================================================================================================  -->
     <Target Name="Build">
         <Message Text="Start build..." Importance="high" />
-        
+        <Message Text="Version: $(VERSION)" Importance="high"/>
         <CallTarget Targets="PrepareBuild"/>
         <CallTarget Targets="RunBuild"/>       
         <CallTarget Targets="CreatePackages"/>
@@ -85,6 +85,7 @@
     <!-- =============================================================================================================================================  -->
     <Target Name="CreatePackages">
         <Message Text="Creating NuGet packages in '$(NuGetPackageDirectory)' ..." Importance="high" />
+       <Message Text="PackageVersion: $(PackageVersion)" Importance="high"/>
 
         <Message Text="Package Version: $(PackageVersion)" />
         
