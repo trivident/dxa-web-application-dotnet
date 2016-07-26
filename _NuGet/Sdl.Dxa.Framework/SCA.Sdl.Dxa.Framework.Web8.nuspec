@@ -16,18 +16,22 @@
         <tags>SDL DXA Web8</tags>
         <references>
             <!-- These assemblies form the DXA public API -->
-            <reference file="Sdl.Web.Mvc.dll" />
-            <reference file="Sdl.Web.Common.dll" />
+          <reference file="Sdl.Web.Mvc.dll" />
+          <reference file="Sdl.Web.Common.dll" />
+          <reference file="Sdl.Web.Tridion.dll" />
+          <reference file="Sdl.Web.Common.Models.dll" />
         </references>
 		<dependencies>
 			<!-- NOTE: We hardly use package dependencies, because we don't want direct references to transitive dependencies and the explicit reference above don't control those.-->
-			<dependency id="Newtonsoft.Json" version="7.0.0" />
-            <dependency id="Sdl.Web.Cil" version="8.1.1" />
+      <dependency id="Sdl.Web.Cil" version="8.1.1" />
+      <dependency id="DD4T.Core" version="2.1.0" />
+      <dependency id="DD4T.Providers.SDLWeb8.CIL" version="2.1.0" />
+      <dependency id="HtmlAgilityPack" version="1.4.6" />
+      <dependency id="log4net" version="2.0.3" />
 		</dependencies>
     </metadata>
     <files>
 		<!-- NOTE: we're excluding CIL assemblies to prevent licensing issues (CIL has a custom license; not Apache 2.0) -->
-        <file src="..\..\Sdl.Web.Tridion\bin\Release\*.dll" exclude="**\Sdl.Web.Delivery*.dll;**\Sdl.Web.Context*.dll;**\Tridion.ContentDelivery*.dll;**\Microsoft.*.dll;**\System.Spatial.dll;**\System.Web*.dll;**\Newtonsoft.Json.dll" target="lib\net452" />
-        <file src="SCA.Sdl.Dxa.Framework.Web8.targets" target="build\net452" />
+        <file src="..\..\Sdl.Web.Tridion\bin\Release\*.dll" exclude="**\log4net.dll;**\HtmlAgilityPack.dll;**\Sdl.Web.Delivery*.dll;**\Sdl.Web.Context*.dll;**\Tridion.ContentDelivery*.dll;**\Microsoft.*.dll;**\System.Spatial.dll;**\System.Web*.dll;**\Newtonsoft.Json.dll;**\DD4T*.dll" target="lib\net452" />
     </files>
 </package>
