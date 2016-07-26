@@ -20,7 +20,7 @@
         <VersionPatch>$(Version.Split('.')[2])</VersionPatch>
         <VersionBuild>$(Version.Split('.')[3])</VersionBuild>
         <PreReleaseLabel Condition="'$(IsPreRelease)' == 'true'">-alpha-$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</PreReleaseLabel>
-        <PackageVersion>$(VERSION)</PackageVersion>
+        <PackageVersion>$(Version)</PackageVersion>
       <!--<PackageVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)$(PreReleaseLabel)</PackageVersion>-->
 
         <!--Tools-->
