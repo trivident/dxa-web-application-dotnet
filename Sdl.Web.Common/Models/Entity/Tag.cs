@@ -1,6 +1,6 @@
 ﻿namespace Sdl.Web.Common.Models
 {
-    public class Tag
+    public class Tag : EntityModel
     {
         /// <summary>
         /// Text to display.
