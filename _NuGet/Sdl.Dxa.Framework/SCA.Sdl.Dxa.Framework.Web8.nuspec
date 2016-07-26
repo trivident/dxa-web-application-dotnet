@@ -25,7 +25,8 @@
 			<!-- NOTE: We hardly use package dependencies, because we don't want direct references to transitive dependencies and the explicit reference above don't control those.-->
       <!--<dependency id="Sdl.Web.Cil" version="8.1.1" />-->
       <dependency id="DD4T.Core" version="2.1.0" />
-      <dependency id="DD4T.Providers.SDLWeb8.CIL" version="2.1.0" />
+      <dependency id="Sdl.Web.Cil" version="8.1.1" />
+      <dependency id="DD4T.Providers.SDLWeb8.CIL" version="2.1.2" />
       <dependency id="HtmlAgilityPack" version="1.4.6" />
       <dependency id="log4net" version="2.0.3" />
 		</dependencies>
