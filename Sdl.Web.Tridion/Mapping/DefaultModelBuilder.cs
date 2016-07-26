@@ -1018,7 +1018,7 @@ namespace Sdl.Web.Tridion.Mapping
                     regionMvcData.RegionName = regionNameField.Value;
                 }
             }
-            regionMvcData.RouteValues = GetRouteValues(ct);
+            regionMvcData.RouteValues = GetRouteValues(ct,"regionRouteValues");
             return regionMvcData;
         }
 
