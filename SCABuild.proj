@@ -33,7 +33,7 @@
     <Target Name="Build">
         <Message Text="Start build..." Importance="high" />
         <Message Text="Version: $(VERSION)" Importance="high"/>
-        <CallTarget Targets="PrepareBuild"/>
+        <!--<CallTarget Targets="PrepareBuild"/>-->
         <CallTarget Targets="RunBuild"/>       
         <CallTarget Targets="CreatePackages"/>
         <!--<CallTarget Targets="PublishPackages" Condition="'$(NuGetRepositoryUrl)' != ''"/>
