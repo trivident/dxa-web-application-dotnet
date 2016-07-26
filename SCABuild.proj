@@ -20,7 +20,8 @@
         <VersionPatch>$(Version.Split('.')[2])</VersionPatch>
         <VersionBuild>$(Version.Split('.')[3])</VersionBuild>
         <PreReleaseLabel Condition="'$(IsPreRelease)' == 'true'">-alpha-$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</PreReleaseLabel>
-        <PackageVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)$(PreReleaseLabel)</PackageVersion>
+        <PackageVersion>$(VERSION)</PackageVersion>
+      <!--<PackageVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)$(PreReleaseLabel)</PackageVersion>-->
 
         <!--Tools-->
         <MsBuildExe>C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe</MsBuildExe>
