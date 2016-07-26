@@ -36,8 +36,8 @@
         <CallTarget Targets="PrepareBuild"/>
         <CallTarget Targets="RunBuild"/>       
         <CallTarget Targets="CreatePackages"/>
-        <CallTarget Targets="PublishPackages" Condition="'$(NuGetRepositoryUrl)' != ''"/>
-        <CallTarget Targets="UpdatePackageRefs" Condition="'$(NuGetRepositoryUrl)' != ''"/>
+        <!--<CallTarget Targets="PublishPackages" Condition="'$(NuGetRepositoryUrl)' != ''"/>
+        <CallTarget Targets="UpdatePackageRefs" Condition="'$(NuGetRepositoryUrl)' != ''"/>-->
     </Target>
 
     <!-- =============================================================================================================================================  -->
