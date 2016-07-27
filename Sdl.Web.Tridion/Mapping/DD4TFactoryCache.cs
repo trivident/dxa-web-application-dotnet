@@ -1,20 +1,15 @@
-﻿using System.Collections.Generic;
-using DD4T.ContentModel.Contracts.Caching;
+﻿using DD4T.ContentModel.Contracts.Caching;
 using DD4T.ContentModel.Contracts.Configuration;
 using DD4T.ContentModel.Contracts.Logging;
 using DD4T.ContentModel.Contracts.Providers;
 using DD4T.ContentModel.Contracts.Resolvers;
 using DD4T.ContentModel.Factories;
 using DD4T.Factories;
+using DD4T.Providers.SDLWeb8.CIL;
 using DD4T.Utils;
 using DD4T.Utils.Caching;
 using Sdl.Web.Common.Configuration;
-
-#if TRIDION_71
-    using DD4T.Providers.SDLTridion2013sp1;
-#else
-    using DD4T.Providers.SDLWeb8.CIL;
-#endif
+using System.Collections.Generic;
 
 namespace Sdl.Web.Tridion.Mapping
 {
@@ -28,7 +23,11 @@ namespace Sdl.Web.Tridion.Mapping
         private static readonly IDictionary<string, IComponentFactory> _componentFactories = new Dictionary<string, IComponentFactory>();
         private static readonly IDictionary<string, IBinaryFactory> _binaryFactories = new Dictionary<string, IBinaryFactory>();
 
+<<<<<<< HEAD
         private static readonly ILogger _logger = new DD4TLoggerAdapter();
+=======
+        private static readonly ILogger _logger = new NullLogger();
+>>>>>>> master
         private static readonly IDD4TConfiguration _config = new DD4TConfiguration();
 
         internal static ICacheAgent CreateCacheAgent()
@@ -47,10 +46,10 @@ namespace Sdl.Web.Tridion.Mapping
                     IProvidersCommonServices providersCommonServices = new ProvidersCommonServices(publicationResolver, _logger, _config);
                     IFactoryCommonServices factoryCommonServices = new FactoryCommonServices(publicationResolver, _logger, _config, CreateCacheAgent());
                     pageFactory = new PageFactory(
-                        new TridionPageProvider(providersCommonServices), 
-                        GetComponentPresentationFactory(localization), 
+                        new TridionPageProvider(providersCommonServices),
+                        GetComponentPresentationFactory(localization),
                         factoryCommonServices
-                        ); 
+                        );
                     _pageFactories.Add(localization.LocalizationId, pageFactory);
                 }
 
@@ -69,7 +68,7 @@ namespace Sdl.Web.Tridion.Mapping
                     IProvidersCommonServices providersCommonServices = new ProvidersCommonServices(publicationResolver, _logger, _config);
                     IFactoryCommonServices factoryCommonServices = new FactoryCommonServices(publicationResolver, _logger, _config, CreateCacheAgent());
                     componentPresentationFactory = new ComponentPresentationFactory(
-                        new TridionComponentPresentationProvider(providersCommonServices), 
+                        new TridionComponentPresentationProvider(providersCommonServices),
                         factoryCommonServices);
                     _componentPresentationFactories.Add(localization.LocalizationId, componentPresentationFactory);
                 }
@@ -77,7 +76,6 @@ namespace Sdl.Web.Tridion.Mapping
                 return componentPresentationFactory;
             }
         }
-
 
         internal static IComponentFactory GetComponentFactory(Localization localization)
         {
@@ -90,7 +88,7 @@ namespace Sdl.Web.Tridion.Mapping
                     IFactoryCommonServices factoryCommonServices = new FactoryCommonServices(publicationResolver, _logger, _config, CreateCacheAgent());
                     componentFactory = new ComponentFactory(
                         GetComponentPresentationFactory(localization),
-                        factoryCommonServices );
+                        factoryCommonServices);
                     _componentFactories.Add(localization.LocalizationId, componentFactory);
                 }
 
@@ -117,6 +115,5 @@ namespace Sdl.Web.Tridion.Mapping
                 return binaryFactory;
             }
         }
-
     }
 }

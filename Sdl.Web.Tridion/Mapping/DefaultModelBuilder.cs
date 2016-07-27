@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using DD4T.ContentModel;
+﻿using DD4T.ContentModel;
 using Sdl.Web.Common;
 using Sdl.Web.Common.Configuration;
 using Sdl.Web.Common.Extensions;
@@ -14,6 +7,13 @@ using Sdl.Web.Common.Logging;
 using Sdl.Web.Common.Mapping;
 using Sdl.Web.Common.Models;
 using Sdl.Web.Tridion.Extensions;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using IPage = DD4T.ContentModel.IPage;
 
 namespace Sdl.Web.Tridion.Mapping
@@ -117,20 +117,28 @@ namespace Sdl.Web.Tridion.Mapping
             }
         }
 
-        private RegionModel GetRegionForEntity(RegionModelSet regions, IComponentPresentation cp, RegionModel currentRegion, Dictionary<String,int> duplicateRegionCounter)
+        private RegionModel GetRegionForEntity(RegionModelSet regions, IComponentPresentation cp, RegionModel currentRegion, Dictionary<String, int> duplicateRegionCounter)
         {
             MvcData cpRegionMvcData = GetRegionMvcData(cp);
             string regionName = cpRegionMvcData.RegionName ?? cpRegionMvcData.ViewName;
-            string currentRegionName = currentRegion!=null ? currentRegion.NameWithoutPostfix : null;
-            string duplicateRegionPostfix = null;
+            string currentRegionName = currentRegion != null ? currentRegion.NameWithoutPostfix : null;
+            string duplicateRegionName = null;
             RegionModel region = null;
-            //If we are still in the same region, reuse it
-            if (regionName==currentRegionName)
+            //If we are still in the same region, reuse it, unless the mvc data is different,
+            //in which case we start a new region of the same name
+            if (regionName == currentRegionName)
             {
-                region = currentRegion;
+                if (currentRegion.MvcData.Equals(cpRegionMvcData))
+                {
+                    return currentRegion;
+                }
+                else
+                {
+                    Log.Debug("Region '{0}' is defined with different MVC data: [{1}] and [{2}]. Starting a new region.", regionName, currentRegion.MvcData, cpRegionMvcData);
+                }
             }
             //We already had this region, but there has been something else inbetween, so we need to create a new (postfixed) one
-            else if (regions.ContainsKey(regionName))
+            if (regions.ContainsKey(regionName))
             {
                 int counter = 1;
                 if (duplicateRegionCounter.ContainsKey(regionName))
@@ -142,15 +150,15 @@ namespace Sdl.Web.Tridion.Mapping
                 {
                     duplicateRegionCounter.Add(regionName, counter);
                 }
-                duplicateRegionPostfix = regions[regionName].GetNameWithPostfix(counter);
+                duplicateRegionName = regions[regionName].GetNameWithPostfix(counter);
             }
             //New region required
             if (region == null)
             {
                 // Region does not exist in Page Model yet; create Region Model and add it.
-                if (!String.IsNullOrEmpty(duplicateRegionPostfix))
+                if (!String.IsNullOrEmpty(duplicateRegionName))
                 {
-                    cpRegionMvcData.RegionName = String.Format("{0}{1}", regionName, duplicateRegionPostfix);
+                    cpRegionMvcData.RegionName = duplicateRegionName;
                 }
                 region = CreateRegionModel(cpRegionMvcData);
                 regions.Add(region);
@@ -228,7 +236,7 @@ namespace Sdl.Web.Tridion.Mapping
 
                 if (entityModel is EclItem)
                 {
-                    MapEclItem((EclItem) entityModel, component);
+                    MapEclItem((EclItem)entityModel, component);
                 }
 
                 if (entityModel is Link)
@@ -244,7 +252,8 @@ namespace Sdl.Web.Tridion.Mapping
                 entityModel.MvcData = entityModel.GetDefaultView(localization);
             }
         }
-        #endregion
+
+        #endregion IModelBuilder members
 
         private static void MapEclItem(EclItem eclItem, IComponent component)
         {
@@ -276,7 +285,6 @@ namespace Sdl.Web.Tridion.Mapping
                 eclItem.EclExternalMetadata = MapEclExternalMetadata(eclExternalMetadataFields);
             }
         }
-
 
         private static IDictionary<string, object> MapEclExternalMetadata(IFieldSet fields)
         {
@@ -320,8 +328,10 @@ namespace Sdl.Web.Tridion.Mapping
             {
                 case 0:
                     return null;
+
                 case 1:
                     return fieldValues[0];
+
                 default:
                     return fieldValues;
             }
@@ -372,7 +382,7 @@ namespace Sdl.Web.Tridion.Mapping
                     Localization = localization
                 };
 
-                pageModel = (PageModel) CreateViewModel(mappingData);
+                pageModel = (PageModel)CreateViewModel(mappingData);
             }
 
             pageModel.MvcData = pageMvcData;
@@ -391,11 +401,9 @@ namespace Sdl.Web.Tridion.Mapping
             return pageModel;
         }
 
-
         protected virtual ViewModel CreateViewModel(MappingData mappingData, SemanticSchemaField contextSchemaField = null)
         {
             Type modelType = mappingData.TargetType; // TODO: why is this not a separate parameter?
-
 
             ViewModel model;
             if (string.IsNullOrEmpty(mappingData.ModelId))
@@ -497,7 +505,7 @@ namespace Sdl.Web.Tridion.Mapping
                     {
                         //Filter out any properties belonging to other entities than the source entity
                         KeyValuePair<string, string>? entityData = GetEntityData(semanticProperty.Prefix, mapData.TargetEntitiesByPrefix, mapData.ParentDefaultPrefix);
-                        if (entityData != null && mapData.EntityNames!=null && mapData.EntityNames.Contains(entityData.Value.Key))
+                        if (entityData != null && mapData.EntityNames != null && mapData.EntityNames.Contains(entityData.Value.Key))
                         {
                             if (mapData.EntityNames[entityData.Value.Key].First() == entityData.Value.Value)
                             {
@@ -552,16 +560,15 @@ namespace Sdl.Web.Tridion.Mapping
             return null;
         }
 
-
         private static IField ExtractMatchedField(SemanticSchemaField matchingField, IFieldSet fields, int embedLevel, string path = null)
         {
-            if (path==null)
+            if (path == null)
             {
                 path = matchingField.Path;
                 while (embedLevel >= -1 && path.Contains("/"))
                 {
                     int pos = path.IndexOf("/", StringComparison.Ordinal);
-                    path = path.Substring(pos+1);
+                    path = path.Substring(pos + 1);
                     embedLevel--;
                 }
             }
@@ -579,7 +586,6 @@ namespace Sdl.Web.Tridion.Mapping
             return null;
         }
 
-
         private static IList CreateGenericList(Type listItemType)
         {
             ConstructorInfo genericListConstructor = typeof(List<>).MakeGenericType(listItemType).GetConstructor(Type.EmptyTypes);
@@ -591,7 +597,6 @@ namespace Sdl.Web.Tridion.Mapping
 
             return (IList)genericListConstructor.Invoke(null);
         }
-
 
         private object MapFieldValues(IField field, Type modelType, bool multival, MappingData mapData, SemanticSchemaField contextSchemaField = null)
         {
@@ -674,7 +679,6 @@ namespace Sdl.Web.Tridion.Mapping
                 }
 
                 return mappedValues.Count == 0 ? null : mappedValues[0];
-
             }
             catch (Exception ex)
             {
@@ -826,18 +830,21 @@ namespace Sdl.Web.Tridion.Mapping
             {
                 case FieldType.Number:
                     return field.NumericValues.Select(v => v.ToString(CultureInfo.InvariantCulture)).ToArray();
+
                 case FieldType.Date:
                     return field.DateTimeValues.Select(v => v.ToString("s")).ToArray();
+
                 case FieldType.ComponentLink:
                 case FieldType.MultiMediaLink:
                     return field.LinkedComponentValues.Select(v => v.Id).ToArray();
+
                 case FieldType.Keyword:
                     return field.KeywordValues.Select(v => v.Id).ToArray();
+
                 default:
                     return field.Values.ToArray();
             }
         }
-
 
         protected virtual string ProcessPageMetadata(IPage page, IDictionary<string, string> meta, Localization localization)
         {
@@ -926,9 +933,9 @@ namespace Sdl.Web.Tridion.Mapping
 
         protected virtual void ProcessMetadataField(IField field, IDictionary<string, string> meta)
         {
-            if (field.FieldType==FieldType.Embedded)
+            if (field.FieldType == FieldType.Embedded)
             {
-                if (field.EmbeddedValues!=null && field.EmbeddedValues.Count>0)
+                if (field.EmbeddedValues != null && field.EmbeddedValues.Count > 0)
                 {
                     IFieldSet subfields = field.EmbeddedValues[0];
                     foreach (IField subfield in subfields.Values)
@@ -945,9 +952,11 @@ namespace Sdl.Web.Tridion.Mapping
                     case "internalLink":
                         value = SiteConfiguration.LinkResolver.ResolveLink(field.Value);
                         break;
+
                     case "image":
                         value = field.LinkedComponentValues[0].Multimedia.Url;
                         break;
+
                     default:
                         value = String.Join(",", field.Values);
                         break;
@@ -1018,7 +1027,7 @@ namespace Sdl.Web.Tridion.Mapping
                     regionMvcData.RegionName = regionNameField.Value;
                 }
             }
-            regionMvcData.RouteValues = GetRouteValues(ct);
+            regionMvcData.RouteValues = GetRouteValues(ct, "regionRouteValues");
             return regionMvcData;
         }
 
@@ -1048,7 +1057,7 @@ namespace Sdl.Web.Tridion.Mapping
             string regionName = regionMvcData.RegionName ?? regionMvcData.ViewName;
 
             Type regionModelType = ModelTypeRegistry.GetViewModelType(regionMvcData);
-            RegionModel regionModel = (RegionModel) Activator.CreateInstance(regionModelType, regionName);
+            RegionModel regionModel = (RegionModel)Activator.CreateInstance(regionModelType, regionName);
             regionModel.MvcData = new MvcData(regionMvcData)
             {
                 RegionName = null // Suppress RegionName in the final model.
@@ -1092,7 +1101,6 @@ namespace Sdl.Web.Tridion.Mapping
                 regions.Add(regionModel);
             }
         }
-
 
         internal static string GetDxaIdentifierFromTcmUri(string tcmUri, string templateTcmUri = null)
         {
