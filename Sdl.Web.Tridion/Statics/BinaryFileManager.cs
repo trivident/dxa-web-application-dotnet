@@ -1,12 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Web;
-using DD4T.ContentModel;
+﻿using DD4T.ContentModel;
 using DD4T.ContentModel.Contracts.Caching;
 using DD4T.ContentModel.Exceptions;
 using DD4T.ContentModel.Factories;
@@ -14,6 +6,14 @@ using Sdl.Web.Common;
 using Sdl.Web.Common.Configuration;
 using Sdl.Web.Common.Logging;
 using Sdl.Web.Tridion.Mapping;
+using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Web;
 using Image = System.Drawing.Image; // TODO: Shouldn't use System.Drawing namespace in a web application.
 
 namespace Sdl.Web.Tridion.Statics
@@ -27,10 +27,11 @@ namespace Sdl.Web.Tridion.Statics
         private ICacheAgent _cacheAgent;
 
         #region Inner classes
+
         internal class Dimensions
         {
-            internal int Width; 
-            internal int Height; 
+            internal int Width;
+            internal int Height;
             internal bool NoStretch;
 
             /// <summary>
@@ -44,28 +45,32 @@ namespace Sdl.Web.Tridion.Statics
                 return string.Format("(W={0}, H={1}, NoStretch={2})", Width, Height, NoStretch);
             }
         }
-        #endregion
+
+        #endregion Inner classes
 
         #region caching
+
         /// <summary>
         /// Gets or sets the CacheAgent
-        /// </summary>  
-        protected ICacheAgent CacheAgent 
+        /// </summary>
+        protected ICacheAgent CacheAgent
         {
             get
             {
-                return _cacheAgent ?? (_cacheAgent = DD4TFactoryCache.CreateCacheAgent() );
+                return _cacheAgent ?? (_cacheAgent = DD4TFactoryCache.CreateCacheAgent());
             }
             set
             {
                 _cacheAgent = value;
             }
         }
+
         private static string GetCacheKey(string url)
         {
             return string.Format("Binary_{0}", url);
         }
-        #endregion
+
+        #endregion caching
 
         /// <summary>
         /// Gets the singleton BinaryFileManager instance.
@@ -91,7 +96,7 @@ namespace Sdl.Web.Tridion.Statics
             {
                 Dimensions dimensions;
                 urlPath = StripDimensions(urlPath, out dimensions);
-                
+
                 string cacheKey = GetCacheKey(urlPath);
                 DateTime? lastPublishedDate = CacheAgent.Load(cacheKey) as DateTime?;
                 if (lastPublishedDate == null)
@@ -99,10 +104,11 @@ namespace Sdl.Web.Tridion.Statics
                     IBinaryFactory binaryFactory = DD4TFactoryCache.GetBinaryFactory(localization);
                     try
                     {
-                        DateTime lpb = binaryFactory.FindLastPublishedDate(urlPath);
-                        if (lpb != DateTime.MinValue.AddSeconds(1)) // this is the secret code for 'does not exist'
+                        //DateTime lpb = binaryFactory.FindLastPublishedDate(urlPath);
+                        var binaryMeta = binaryFactory.FindBinaryMeta(urlPath);
+                        if (binaryMeta.LastPublishedDate != DateTime.MinValue.AddSeconds(1)) // this is the secret code for 'does not exist'
                         {
-                            lastPublishedDate = lpb;
+                            lastPublishedDate = binaryMeta.LastPublishedDate;
                             CacheAgent.Store(cacheKey, "Binary", lastPublishedDate);
                         }
                     }
@@ -146,12 +152,16 @@ namespace Sdl.Web.Tridion.Statics
                 }
 
                 // the normal situation (where a binary is still in Tridion and it is present on the file system already and it is up to date) is now covered
-                // Let's handle the exception situations. 
+                // Let's handle the exception situations.
                 IBinary binary;
+                byte[] localByte;
                 try
                 {
                     IBinaryFactory binaryFactory = DD4TFactoryCache.GetBinaryFactory(localization);
                     binaryFactory.TryFindBinary(urlPath, out binary);
+                    bool loaded = binaryFactory.TryFindBinaryContent(urlPath, out localByte);
+                    if (loaded)
+                        binary = new Binary() { BinaryData = localByte, Url = urlPath };
                 }
                 catch (BinaryNotFoundException)
                 {
@@ -350,6 +360,7 @@ namespace Sdl.Web.Tridion.Statics
                 case ".jpg":
                 case ".jpeg":
                     return ImageFormat.Jpeg;
+
                 case ".gif":
                     return ImageFormat.Gif;
                 //case ".png":
@@ -376,7 +387,7 @@ namespace Sdl.Web.Tridion.Statics
                 {
                     dimensions.Height = Convert.ToInt32(dim);
                 }
-                if(!String.IsNullOrEmpty(match.Groups[5].ToString()))
+                if (!String.IsNullOrEmpty(match.Groups[5].ToString()))
                 {
                     dimensions.NoStretch = true;
                 }
@@ -388,6 +399,5 @@ namespace Sdl.Web.Tridion.Statics
             path = path.Replace(" ", "%20");
             return path;
         }
-
     }
 }
